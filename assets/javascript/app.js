@@ -2,20 +2,22 @@ $(document).ready(function() {
 
     $("#start").on("click", function() {
 
-        numberQuestions--;
+        
         timer.start();
         timer.count();
         displayQs();
         displayAs();
 
-	})
+	});
 
-	var numberQuestions = 11,
+    var userSelect = "";
+
+	var numberQuestions = 10,
 		currentQuestion,
 		currentChoices,
 		numberCorrect = 0,
 		numberIncorrect = 0,
-		numberUnanswered = 0,
+		numberUnanswered = 0;
 
 	var questions = [
 		{
@@ -77,8 +79,8 @@ $(document).ready(function() {
 			q: "Which of the following has never been an alias of Matthew Mara?",
 			correct: "The Ham-burgler",
 			incorrect: ["Rickety Cricket", "Street Urchin", "The Talibum"]
-		},		
-	]
+		}		
+	];
 
 	var timer = {
 		time: 10,
@@ -90,7 +92,7 @@ $(document).ready(function() {
 		count: function() {
 			timer.time--;
 			var converted = timer.timeConverter(timer.time);
-			$("#timer").html(converted);
+			$("#timer").text(converted);
 		},
 
 		stop: function() {
@@ -111,40 +113,51 @@ $(document).ready(function() {
 			}
 			return minutes + ":" + seconds;
 		}
-	}
+	};
+
+	$(".ansBtn").on("click", function() {
+		userSelect = $(this).find('span').text();
+		checkAnswer();
+	});
 
 	function checkAnswer() {
-    $(".ansBtn").on("click", function() {
 
-        var userSelect = this.innerHTML;
 
-        if (userSelect === activeQuestion.correct) {
+        console.log(userSelect);
+
+        if (userSelect === currentQuestion.correct) {
             numberCorrect += 1;
 
             $("#choiceAlert").html("That's right jabroni! Keep it up!");
             timer.stop();
             $("#timer").empty();
-            $("#answer1").empty();
-            $("#answer2").empty();
-            $("#answer3").empty();
-            $("#answer4").empty();
-            $("#question-display").empty();
+            $('#answer1').find('span').empty();
+            $('#answer2').find('span').empty();
+            $('#answer3').find('span').empty();
+            $('#answer4').find('span').empty();
+            $('#question-display').empty();
+            $("#correct-count").text("Correct: " + numberCorrect);
 
             setTimeout(displayQs, 2000);
             setTimeout(displayAs, 2000);
             setTimeout(timer.reset, 2000);
-            setTimeout(timer.start, 2001);
+            setTimeout(timer.start, 2010);
 
 
         } else {
             $("#choiceAlert").text("NO! Try again bozo");
             numberIncorrect += 1;
-	}
+            $("#incorrect-count").text("Incorrect: " + numberIncorrect);
+        }
+	};
 
 
 
-	function displayAs() {
-		
+function displayAs() {
+	for (var i = questions.length - 1; i >= 0; i--) {
+    	currentQuestion = questions[i];
+    }	
+
 		currentChoices = [
 		
 		currentQuestion.correct, 
@@ -155,19 +168,29 @@ $(document).ready(function() {
 		
 		currentQuestion.incorrect[2]
 	]
+	
+	function shuffleArray(array) {
+	    for (let i = array.length - 1; i > 0; i--) {
+	        let j = Math.floor(Math.random() * (i + 1));
+	        [array[i], array[j]] = [array[j], array[i]];
+	    }
 
-		var shuffleAnswers = Math.random(currentChoices.length);
-		$("#answer1").text(shuffleAnswers[0]);
-		$("#answer2").text(shuffleAnswers[1]);
-		$("#answer3").text(shuffleAnswers[2]);
-		$("#answer4").text(shuffleAnswers[3]);
+	}
+	shuffleArray(currentChoices);
+
+	$('#answer1').find('span').text(currentChoices[0]);
+	$('#answer2').find('span').text(currentChoices[1]);
+	$('#answer3').find('span').text(currentChoices[2]);
+	$('#answer4').find('span').text(currentChoices[3]);
+    
     };
 
-    function displayQs() {
-    currentQuestion = questions[i++];
-    $("#question-display").text("<h3>" + currentQuestion.q + "</h3>");
-}
-
-
+function displayQs() {
+    for (var i = questions.length - 1; i >= 0; i--) {
+    	currentQuestion = questions[i];
+    };
+    	
+    $("#question-display").text(currentQuestion.q);
+	};
 
 });
