@@ -4,7 +4,6 @@ $(document).ready(function() {
 
         
         timer.start();
-        timer.count();
         displayQs();
         displayAs();
 
@@ -16,8 +15,8 @@ $(document).ready(function() {
 		currentQuestion,
 		currentChoices,
 		numberCorrect = 0,
-		numberIncorrect = 0,
-		numberUnanswered = 0;
+		numberIncorrect = 0;
+
 
 	var questions = [
 		{
@@ -93,6 +92,12 @@ $(document).ready(function() {
 			timer.time--;
 			var converted = timer.timeConverter(timer.time);
 			$("#timer").text(converted);
+			if (timer.time === 0) {
+				timer.reset();
+				alert("Too slow! Have some Fight Milk!");
+            	numberIncorrect += 1;
+            	$("#incorrect-count").text("Incorrect: " + numberIncorrect);				
+			}
 		},
 
 		stop: function() {
@@ -112,7 +117,13 @@ $(document).ready(function() {
 			    minutes = "0" + minutes;
 			}
 			return minutes + ":" + seconds;
-		}
+		},
+
+		reset: function() {
+			timer.time = 10;
+			$("#timer").text("00:10");
+		},
+
 	};
 
 	$(".ansBtn").on("click", function() {
@@ -138,10 +149,13 @@ $(document).ready(function() {
             $('#question-display').empty();
             $("#correct-count").text("Correct: " + numberCorrect);
 
+
+
             setTimeout(displayQs, 2000);
             setTimeout(displayAs, 2000);
             setTimeout(timer.reset, 2000);
             setTimeout(timer.start, 2010);
+
 
 
         } else {
@@ -151,12 +165,18 @@ $(document).ready(function() {
         }
 	};
 
+function displayQs() {
+    		
+    		randomQuestion = Math.floor(Math.random() * questions.length)
+    		currentQuestion = questions[randomQuestion];
+    		
+    		$("#question-display").text(currentQuestion.q);
+   
+			questions = questions.slice(0, randomQuestion).concat(questions.slice( randomQuestion + 1, questions.length));
 
+	};
 
 function displayAs() {
-	for (var i = questions.length - 1; i >= 0; i--) {
-    	currentQuestion = questions[i];
-    }	
 
 		currentChoices = [
 		
@@ -184,13 +204,5 @@ function displayAs() {
 	$('#answer4').find('span').text(currentChoices[3]);
     
     };
-
-function displayQs() {
-    for (var i = questions.length - 1; i >= 0; i--) {
-    	currentQuestion = questions[i];
-    };
-    	
-    $("#question-display").text(currentQuestion.q);
-	};
 
 });
