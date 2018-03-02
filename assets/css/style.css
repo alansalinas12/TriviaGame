@@ -1,7 +1,38 @@
-body {
-	background-color: #f8c400;
+@font-face {
+	font-family: "Lucida Casual";
+	src: url("lucasit.ttf");
 }
+
+
+body {
+	background-image: url('../images/paddys.jpg');
+	background-size: cover;
+}
+
+header {
+
+	font-family: Lucida Casual;
+	background-color: #f8c400;
+	margin-right: 25%;
+	margin-left: 25%;
+	margin-bottom: 15px;
+	margin-top: 15px;
+	padding: 15px;
+}
+
 #iasipLogo {
 	max-width: 250px;
 	max-height: 150px;
+}
+
+.ansBtn {
+	visibility: hidden;
+}
+
+#game-section {
+
+	background-color: #f8c400;	
+	padding: 15px;
+	margin-right: 10%;
+	margin-left: 10%;
 }

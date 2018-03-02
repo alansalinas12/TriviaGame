@@ -1,8 +1,12 @@
 $(document).ready(function() {
 
+
+
     $("#start").on("click", function() {
 
-        
+        $(".ansBtn").css('visibility', 'visible');
+        $("#start").css('visibility', 'hidden');
+        initQuestions();
         timer.start();
         displayQs();
         displayAs();
@@ -18,7 +22,12 @@ $(document).ready(function() {
 		numberIncorrect = 0;
 
 
-	var questions = [
+	var questions;
+	
+
+	function initQuestions() {
+	questions = [];
+	questions.push(
 		{
 			name: "q1",
 			q: "What is the main ingredient of Mac and Charlie's 'Fight Milk'?",
@@ -79,7 +88,7 @@ $(document).ready(function() {
 			correct: "The Ham-burgler",
 			incorrect: ["Rickety Cricket", "Street Urchin", "The Talibum"]
 		}		
-	];
+	)};
 
 	var timer = {
 		time: 10,
@@ -89,15 +98,14 @@ $(document).ready(function() {
 		},
 
 		count: function() {
+
 			timer.time--;
 			var converted = timer.timeConverter(timer.time);
 			$("#timer").text(converted);
 			if (timer.time === 0) {
-				timer.reset();
-				alert("Too slow! Have some Fight Milk!");
-            	numberIncorrect += 1;
-            	$("#incorrect-count").text("Incorrect: " + numberIncorrect);				
-			}
+				checkAnswer();				
+			} 
+		
 		},
 
 		stop: function() {
@@ -138,6 +146,7 @@ $(document).ready(function() {
 
         if (userSelect === currentQuestion.correct) {
             numberCorrect += 1;
+            numberQuestions -= 1;
 
             $("#choiceAlert").html("That's right jabroni! Keep it up!");
             timer.stop();
@@ -151,28 +160,48 @@ $(document).ready(function() {
 
 
 
-            setTimeout(displayQs, 2000);
-            setTimeout(displayAs, 2000);
-            setTimeout(timer.reset, 2000);
-            setTimeout(timer.start, 2010);
+            timeoutQ = setTimeout(displayQs, 2000);
+            timeoutA = setTimeout(displayAs, 2000);
+            timeoutRestart = setTimeout(timer.reset, 2000);
+            timeoutStart = setTimeout(timer.start, 2010);
 
 
 
         } else {
-            $("#choiceAlert").text("NO! Try again bozo");
+            $("#choiceAlert").text("NO! That's not it BOZO! The correct answer is " + currentQuestion.correct);
             numberIncorrect += 1;
+            numberQuestions -= 1;
+            timer.stop();
+
             $("#incorrect-count").text("Incorrect: " + numberIncorrect);
+            $("#timer").empty();
+            $('#answer1').find('span').empty();
+            $('#answer2').find('span').empty();
+            $('#answer3').find('span').empty();
+            $('#answer4').find('span').empty();
+            $('#question-display').empty();
+
+            timeoutQ = setTimeout(displayQs, 2000);
+            timeoutA = setTimeout(displayAs, 2000);
+            timeoutRestart = setTimeout(timer.reset, 2000);
+            timeoutStart = setTimeout(timer.start, 2010);
         }
+
+        if (numberQuestions === 0) {
+    		gameReset();
+    	}
+
 	};
 
 function displayQs() {
-    		
+
+    		$("#choiceAlert").empty();
     		randomQuestion = Math.floor(Math.random() * questions.length)
     		currentQuestion = questions[randomQuestion];
     		
     		$("#question-display").text(currentQuestion.q);
    
-			questions = questions.slice(0, randomQuestion).concat(questions.slice( randomQuestion + 1, questions.length));
+			questions = questions.slice(0, randomQuestion).concat(questions.slice(randomQuestion + 1, questions.length));
 
 	};
 
@@ -204,5 +233,38 @@ function displayAs() {
 	$('#answer4').find('span').text(currentChoices[3]);
     
     };
+
+function gameReset() {
+	if (window.confirm("You got a total of " + numberCorrect + " answers correct and you chose the incorrect answer " + numberIncorrect + " times. Press OK to restart the game.")) {
+		
+		
+		$("#start").css('visibility', 'visible');
+		$(".ansBtn").css('visibility', 'hidden');
+		$("#timer").empty();
+		$("#correct-count").text("Correct: 0");
+		$("#incorrect-count").text("Incorrect: 0");
+      	$('#answer1').find('span').empty();
+      	$('#answer2').find('span').empty();
+      	$('#answer3').find('span').empty();
+      	$('#answer4').find('span').empty();
+      	$('#question-display').empty();
+      	$("#choiceAlert").empty();
+
+
+      	clearTimeout(timeoutQ);
+        clearTimeout(timeoutA);
+        clearTimeout(timeoutRestart);
+        clearTimeout(timeoutStart);
+        clearInterval(counter);
+
+
+      	numberQuestions = 10;
+      	numberCorrect = 0;
+		numberIncorrect = 0;
+		timer.time = 10;
+
+	}
+}
+
 
 });
